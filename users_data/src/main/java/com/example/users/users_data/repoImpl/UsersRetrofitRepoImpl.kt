@@ -6,8 +6,11 @@ import com.example.user.users_domain.responses.UsersResponse
 import com.example.users.users_data.api.remote.ApiInterface
 import com.example.users.users_data.mappers.UsersMapper
 import com.example.users.users_data.model.UsersModel
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class UsersRetrofitRepoImpl(val api:ApiInterface) :UsersRepo{
+@Singleton
+class UsersRetrofitRepoImpl @Inject constructor(val api:ApiInterface) :UsersRepo{
     override suspend fun getUsers(): UsersResponse {
         val response = api.getUsers()
         if (response.isSuccessful){
