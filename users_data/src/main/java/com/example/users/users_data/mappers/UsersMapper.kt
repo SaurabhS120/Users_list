@@ -7,6 +7,7 @@ object UsersMapper {
     fun toUsersEntities(model: UsersModel): List<UsersEntity> {
         return model.users?.map { userItem->
             UsersEntity(
+                userItem?.id?:0,
                 userItem?.firstName?:"",
                 userItem?.maidenName?:"",
                 userItem?.lastName?:""

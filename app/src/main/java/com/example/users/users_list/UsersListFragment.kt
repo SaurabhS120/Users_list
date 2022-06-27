@@ -6,29 +6,25 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.user.users_domain.responses.UsersResponse
-import com.example.user.users_domain.usecases.GetUsersUsecase
-import com.example.users.R
 import com.example.users.databinding.FragmentUsersListBinding
-import com.example.users.users_data.api.remote.RetrofitApi
-import com.example.users.users_data.repoImpl.UsersRetrofitRepoImpl
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.scopes.FragmentScoped
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class UsersListFragment: Fragment() {
     val viewModel : UsersListViewModel by viewModels()
+    val adapter = UsersListAdapter()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
         val binding = FragmentUsersListBinding.inflate(layoutInflater, container, false)
+        binding.usersRecycler.adapter = adapter
+        binding.usersRecycler.layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false)
         return binding.root
     }
 
@@ -39,14 +35,11 @@ class UsersListFragment: Fragment() {
         viewModel.users.observe(viewLifecycleOwner){response->
             when(response){
                 is UsersResponse.Success->{
-                    Log.i("response","succeess")
-                    response.response?.forEach {
-                        Log.i("response","${it.firstName} ${it.medianName} ${it.lastName}")
-                    }
+                    val data = response.response?: listOf()
+                    adapter.submitList(data)
                 }
                 is UsersResponse.Failure->{
-                    Log.i("response","error")
-                    Log.i("response", response.errorMsg)
+                    Toast.makeText(requireContext(),response.errorMsg,Toast.LENGTH_SHORT).show()
                 }
             }
         }
