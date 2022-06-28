@@ -1,15 +1,12 @@
 package com.example.users.users_list
 
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.user.users_domain.responses.UsersResponse
 import com.example.users.databinding.FragmentUsersListBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -32,16 +29,9 @@ class UsersListFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.getUsersUsecase()
-        viewModel.users.observe(viewLifecycleOwner){response->
-            when(response){
-                is UsersResponse.Success->{
-                    val data = response.response?: listOf()
-                    adapter.submitList(data)
-                }
-                is UsersResponse.Failure->{
-                    Toast.makeText(requireContext(),response.errorMsg,Toast.LENGTH_SHORT).show()
-                }
-            }
+        viewModel.users.observe(viewLifecycleOwner) { response ->
+
+            adapter.submitList(response)
         }
     }
 }
