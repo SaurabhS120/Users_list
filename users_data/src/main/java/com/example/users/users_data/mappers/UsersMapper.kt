@@ -27,4 +27,8 @@ object UsersMapper {
             UserDbEntity(entity.id, entity.firstName, entity.maidenName, entity.lastName)
         } ?: listOf()
     }
+
+    fun dbEntityToUserEntity(entity: UserDbEntity): UsersEntity {
+        return UsersEntity(entity.id, entity.first_name, entity.maiden_name, entity.last_name)
+    }
 }
