@@ -7,13 +7,17 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.reactivex.rxjava3.core.Maybe
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 @Module
 @InstallIn(SingletonComponent::class)
 class UsersRoomRepoImpl @Inject constructor(val roomDatabase: UsersRoomDatabase) : UsersLocalRepo {
-    override suspend fun getUsers(coroutineContext: CoroutineContext): Maybe<List<UserDbEntity>> {
+    override suspend fun getUsers(
+        coroutineContext: CoroutineContext,
+        compositeDisposable: CompositeDisposable
+    ): Maybe<List<UserDbEntity>> {
         return roomDatabase.userDao().getUsers()
     }
 

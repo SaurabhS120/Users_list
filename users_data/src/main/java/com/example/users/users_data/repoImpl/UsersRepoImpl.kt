@@ -10,6 +10,7 @@ import com.example.users.users_data.repos.UsersRemoteRepo
 import io.reactivex.rxjava3.core.MaybeObserver
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.SingleObserver
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,13 +22,17 @@ class UsersRepoImpl @Inject constructor(
     val usersLocalRepo: UsersLocalRepo,
     val usersRemoteRepo: UsersRemoteRepo
 ) : UsersMediatorRepo {
-    override suspend fun getUsers(coroutineContext: CoroutineContext): Observable<List<UsersEntity>> {
+    override suspend fun getUsers(
+        coroutineContext: CoroutineContext,
+        compositeDisposable: CompositeDisposable
+    ): Observable<List<UsersEntity>> {
 
         return Observable.create { emitter ->
             fun getRemoteObserver(coroutineContext: CoroutineContext): SingleObserver<List<UsersEntity>> {
                 return object : SingleObserver<List<UsersEntity>> {
                     override fun onSubscribe(d: Disposable) {
                         Log.d("state", "remote observer : onSubscribe")
+                        compositeDisposable.add(d)
                     }
 
                     override fun onSuccess(t: List<UsersEntity>) {
@@ -52,6 +57,7 @@ class UsersRepoImpl @Inject constructor(
                 return object : MaybeObserver<List<UserDbEntity>> {
                     override fun onSubscribe(d: Disposable) {
                         Log.d("state", "local observer onSubscribe")
+                        compositeDisposable.add(d)
                     }
 
                     override fun onError(e: Throwable) {
@@ -73,7 +79,7 @@ class UsersRepoImpl @Inject constructor(
                         } else {
                             CoroutineScope(coroutineContext).launch {
                                 Log.d("state", "local observer fetch remote")
-                                usersRemoteRepo.getUsers(coroutineContext)
+                                usersRemoteRepo.getUsers(coroutineContext, compositeDisposable)
                                     .subscribe(getRemoteObserver(coroutineContext))
                             }
                         }
@@ -85,7 +91,7 @@ class UsersRepoImpl @Inject constructor(
             }
             CoroutineScope(coroutineContext).launch {
                 Log.d("state", "local observer Starting")
-                usersLocalRepo.getUsers(coroutineContext)
+                usersLocalRepo.getUsers(coroutineContext, compositeDisposable)
                     .subscribe(getLocalObserver(coroutineContext))
             }
         }
