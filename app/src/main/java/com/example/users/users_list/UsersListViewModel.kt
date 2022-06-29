@@ -27,6 +27,7 @@ class UsersListViewModel  @Inject constructor(val getUsersUsecase: GetUsersUseca
 
     private fun getUsersObserver(): Observer<List<UsersEntity>> {
         return object : Observer<List<UsersEntity>> {
+            var list = mutableListOf<UsersEntity>()
             override fun onSubscribe(d: Disposable) {
                 Log.d("state", "mediator observer onSubscribe")
                 compositeDisposable.add(d)
@@ -34,7 +35,8 @@ class UsersListViewModel  @Inject constructor(val getUsersUsecase: GetUsersUseca
 
             override fun onNext(t: List<UsersEntity>) {
                 Log.d("state", "mediator observer onNext")
-                users.postValue(t)
+                list.addAll(t)
+                users.postValue(list)
             }
 
             override fun onError(e: Throwable) {
@@ -43,6 +45,7 @@ class UsersListViewModel  @Inject constructor(val getUsersUsecase: GetUsersUseca
 
             override fun onComplete() {
                 Log.d("state", "mediator observer onComplete")
+                list = mutableListOf()
             }
 
         }

@@ -28,73 +28,97 @@ class UsersRepoImpl @Inject constructor(
     ): Observable<List<UsersEntity>> {
 
         return Observable.create { emitter ->
-            fun getRemoteObserver(coroutineContext: CoroutineContext): SingleObserver<List<UsersEntity>> {
-                return object : SingleObserver<List<UsersEntity>> {
-                    override fun onSubscribe(d: Disposable) {
-                        Log.d("state", "remote observer : onSubscribe")
-                        compositeDisposable.add(d)
-                    }
 
-                    override fun onSuccess(t: List<UsersEntity>) {
-                        Log.d("state", "remote observer : onSuccess")
-                        emitter.onNext(t)
-                        emitter.onComplete()
-                        val dbEntities = UsersMapper.toUsersDbEntities(t)
-                        CoroutineScope(coroutineContext).launch(Dispatchers.IO) {
-                            usersLocalRepo.insertAll(dbEntities)
+            CoroutineScope(coroutineContext).launch {
+                fun getRemoteObserver(coroutineContext: CoroutineContext): SingleObserver<List<UsersEntity>> {
+                    return object : SingleObserver<List<UsersEntity>> {
+                        override fun onSubscribe(d: Disposable) {
+                            Log.d("state", "remote observer : onSubscribe")
+                            compositeDisposable.add(d)
                         }
-                    }
 
-                    override fun onError(e: Throwable) {
-                        Log.d("state", "remote observer : onError")
-                        emitter.onError(e)
-                    }
-
-                }
-            }
-
-            fun getLocalObserver(coroutineContext: CoroutineContext): MaybeObserver<List<UserDbEntity>> {
-                return object : MaybeObserver<List<UserDbEntity>> {
-                    override fun onSubscribe(d: Disposable) {
-                        Log.d("state", "local observer onSubscribe")
-                        compositeDisposable.add(d)
-                    }
-
-                    override fun onError(e: Throwable) {
-                        Log.d("state", "local observer onError")
-                        emitter.onError(e)
-                    }
-
-                    override fun onComplete() {
-                        Log.d("state", "local observer onComplete")
-
-                    }
-
-                    override fun onSuccess(t: List<UserDbEntity>) {
-                        Log.d("state", "local observer onSuccess")
-                        if (t.isNotEmpty()) {
-                            val entities = UsersMapper.toUsersEntities(t)
-                            emitter.onNext(entities)
-                            emitter.onComplete()
-                        } else {
-                            CoroutineScope(coroutineContext).launch {
-                                Log.d("state", "local observer fetch remote")
-                                usersRemoteRepo.getUsers(coroutineContext, compositeDisposable)
-                                    .subscribe(getRemoteObserver(coroutineContext))
+                        override fun onSuccess(t: List<UsersEntity>) {
+                            val text: Int? = if (t.size > 1) {
+                                t[0].id
+                            } else null
+                            Log.d("state", "remote observer onSuccess $text")
+                            emitter.onNext(t)
+                            val dbEntities = UsersMapper.toUsersDbEntities(t)
+                            CoroutineScope(coroutineContext).launch(Dispatchers.IO) {
+                                usersLocalRepo.insertAll(dbEntities)
                             }
                         }
 
+                        override fun onError(e: Throwable) {
+                            Log.d("state", "remote observer : onError")
+                            emitter.onError(e)
+                        }
 
                     }
-
                 }
-            }
-            CoroutineScope(coroutineContext).launch {
+
+                fun getLocalObserver(coroutineContext: CoroutineContext): MaybeObserver<List<UserDbEntity>> {
+                    return object : MaybeObserver<List<UserDbEntity>> {
+                        override fun onSubscribe(d: Disposable) {
+                            Log.d("state", "local observer onSubscribe")
+                            compositeDisposable.add(d)
+                        }
+
+                        override fun onError(e: Throwable) {
+                            Log.d("state", "local observer onError")
+                            emitter.onError(e)
+                        }
+
+                        override fun onComplete() {
+                            Log.d("state", "local observer onComplete")
+
+                        }
+
+                        override fun onSuccess(t: List<UserDbEntity>) {
+                            val text: Int? = if (t.size > 1) {
+                                t[0].id
+                            } else null
+                            Log.d("state", "local observer onSuccess $text")
+                            if (t.isNotEmpty()) {
+                                val entities = UsersMapper.toUsersEntities(t)
+                                emitter.onNext(entities)
+                            } else {
+                                CoroutineScope(coroutineContext).launch {
+                                    Log.d("state", "local observer fetch remote")
+                                    usersRemoteRepo.getUsers(coroutineContext, compositeDisposable)
+                                        .subscribe(getRemoteObserver(coroutineContext))
+                                }
+                            }
+
+
+                        }
+
+                    }
+                }
                 Log.d("state", "local observer Starting")
-                usersLocalRepo.getUsers(coroutineContext, compositeDisposable)
-                    .subscribe(getLocalObserver(coroutineContext))
+                Observable.range(1, 10)
+                    .map {
+                        Log.d("state", "calling observer $it")
+
+                        usersLocalRepo.getUsersPage(it, coroutineContext, compositeDisposable)
+                    }
+                    .apply {
+                        blockingForEach { it.blockingSubscribe(getLocalObserver(coroutineContext)) }
+                        doOnError {
+                            emitter.onError(it)
+                        }
+                        doFinally { emitter.onComplete() }
+                    }
             }
         }
+    }
+
+    override fun getUsersPage(
+        pageNo: Int,
+        coroutineContext: CoroutineContext,
+        compositeDisposable: CompositeDisposable
+    ): Observable<List<UsersEntity>> {
+        TODO("Not yet implemented")
     }
 
 
