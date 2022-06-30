@@ -9,10 +9,9 @@ import com.example.users.users_data.model.UsersModel
 import com.example.users.users_data.repos.UsersRemoteRepo
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.CompositeDisposable
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
+import retrofit2.Response
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.CoroutineContext
@@ -40,29 +39,37 @@ class UsersRetrofitRepoImpl @Inject constructor(val api: ApiInterface) : UsersRe
         coroutineContext: CoroutineContext,
         compositeDisposable: CompositeDisposable
     ): Single<UsersEntityPage> {
-        val offset = ((pageNo - 1) * PageConfig.PAGE_SIZE) + 1
+        val offset = ((pageNo - 1) * PageConfig.PAGE_SIZE)
         Log.d("state", "getUserRetrofit page:$pageNo")
         Log.d("state", "getUserRetrofit offset:$offset pagesize:${PageConfig.PAGE_SIZE}")
         return Single.create { singleEmitter ->
-            CoroutineScope(coroutineContext).launch {
-                val response = api.getUsers(offset, PageConfig.PAGE_SIZE)
-                if (response.isSuccessful) {
-                    val responseData: UsersModel? = response.body()
-                    responseData?.let {
-                        val entities = UsersMapper.toUsersEntities(it)
-                        val text: Int? = if (entities.size >= 1) {
-                            entities[0].id
-                        } else {
-                            null
+            api.getUsers(offset, PageConfig.PAGE_SIZE)
+                .enqueue(object : Callback<UsersModel> {
+                    override fun onResponse(
+                        call: Call<UsersModel>,
+                        response: Response<UsersModel>
+                    ) {
+                        if (response.isSuccessful) {
+                            val responseData: UsersModel? = response.body()
+                            responseData?.let {
+                                val entities = UsersMapper.toUsersEntities(it)
+                                val text: Int? = if (entities.size >= 1) {
+                                    entities[0].id
+                                } else {
+                                    null
+                                }
+                                Log.d("state", "getUserRetrofit success id:$text")
+                                val usersEntityPage = UsersEntityPage(pageNo, entities)
+                                singleEmitter.onSuccess(usersEntityPage)
+                            }
                         }
-                        Log.d("state", "getUserRetrofit success id:$text")
-                        val usersEntityPage = UsersEntityPage(pageNo, entities)
-                        singleEmitter.onSuccess(usersEntityPage)
-                        return@launch
                     }
-                }
-                singleEmitter.onError(Throwable(response.errorBody().toString()))
-            }
+
+                    override fun onFailure(call: Call<UsersModel>, t: Throwable) {
+                        Log.d("state", "retrofit repo fail")
+                        singleEmitter.onError(t)
+                    }
+                })
         }
     }
 
@@ -72,7 +79,7 @@ class UsersRetrofitRepoImpl @Inject constructor(val api: ApiInterface) : UsersRe
                 .enqueue(object : Callback<UsersModel> {
                     override fun onResponse(
                         call: Call<UsersModel>,
-                        response: retrofit2.Response<UsersModel>
+                        response: Response<UsersModel>
                     ) {
                         if (response.isSuccessful) {
                             val total = response.body()?.total ?: 0
@@ -121,11 +128,5 @@ class UsersRetrofitRepoImpl @Inject constructor(val api: ApiInterface) : UsersRe
 //        }
     }
 
-    override suspend fun getUsers(
-        coroutineContext: CoroutineContext,
-        compositeDisposable: CompositeDisposable
-    ): Single<UsersEntityPage> {
-        TODO("Not yet implemented")
-    }
 
 }

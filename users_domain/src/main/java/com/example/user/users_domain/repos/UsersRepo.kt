@@ -4,10 +4,6 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import kotlin.coroutines.CoroutineContext
 
 interface UsersRepo<OBSERVER> {
-    suspend fun getUsers(
-        coroutineContext: CoroutineContext,
-        compositeDisposable: CompositeDisposable
-    ): OBSERVER
 
     fun getUsersPage(
         pageNo: Int,

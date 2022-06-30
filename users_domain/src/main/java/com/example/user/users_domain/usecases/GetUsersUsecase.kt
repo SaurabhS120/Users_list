@@ -9,12 +9,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.coroutines.CoroutineContext
 
 @Singleton
 class GetUsersUsecase @Inject constructor(val repo: UsersMediatorRepo) {
     suspend fun invoke(
-        coroutineContext: CoroutineContext,
         compositeDisposable: CompositeDisposable
     ): Observable<UsersEntityPage> {
         return withContext(Dispatchers.IO) {

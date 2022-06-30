@@ -10,6 +10,7 @@ import com.example.users.users_data.repos.UsersLocalRepo
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import javax.inject.Inject
@@ -34,20 +35,15 @@ class UsersRoomRepoImpl @Inject constructor(val roomDatabase: UsersRoomDatabase)
         val end = ((pageNo) * PageConfig.PAGE_SIZE)
         Log.d("state", "getUserRoom start:$start end:$end")
         return roomDatabase.userDao().getUsersBetween(start, end).map { data ->
+            Log.d("state", "getUserRoom page:$pageNo data: ${data.map { it.id }}")
             UsersEntityPage(pageNo, UsersMapper.toUsersEntities(data))
         }
     }
 
-    override fun insertAll(users: List<UsersEntity>) {
+    override fun insertAll(users: List<UsersEntity>): Completable {
         val converted = UsersMapper.toUsersDbEntities(users)
-        roomDatabase.userDao().insertAll(converted)
+        return roomDatabase.userDao().insertAll(converted)
     }
 
-    override suspend fun getUsers(
-        coroutineContext: CoroutineContext,
-        compositeDisposable: CompositeDisposable
-    ): Maybe<UsersEntityPage> {
-        TODO("Not yet implemented")
-    }
 
 }

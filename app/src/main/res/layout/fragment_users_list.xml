@@ -20,6 +20,7 @@
             android:id="@+id/users_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:visibility="@{viewModel.isDataLoaded?View.VISIBLE:View.INVISIBLE,default=visible}"
             tools:listitem="@layout/user_list_item" />
 
         <FrameLayout

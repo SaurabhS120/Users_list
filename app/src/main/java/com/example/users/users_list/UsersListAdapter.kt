@@ -20,7 +20,7 @@ class UsersListAdapter : ListAdapter<UsersEntity, UsersListAdapter.EntityViewHol
 
     override fun onBindViewHolder(holder: EntityViewHolder, position: Int) {
         val text:String = getItem(position).let { 
-            "${it.firstName} ${it.maidenName} ${it.lastName}"
+            "${it.firstName} ${it.maidenName} ${it.lastName} ${it.id}"
         }
         holder.binding.fullNameTv.setText(text)
     }

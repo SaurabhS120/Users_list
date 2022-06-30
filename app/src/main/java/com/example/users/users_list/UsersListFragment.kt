@@ -37,7 +37,9 @@ class UsersListFragment: Fragment() {
         }
         viewModel.errorLiveData.observe(viewLifecycleOwner) {
             Snackbar.make(binding.root, it, Snackbar.LENGTH_INDEFINITE)
-                .setAction("Retry", {})
+                .setAction("Retry", {
+                    viewModel.loadData()
+                })
                 .show()
         }
     }

@@ -30,16 +30,26 @@ class UsersListViewModel @Inject constructor(
     val errorLiveData = MutableLiveData<String>()
 
     init {
+        loadData()
+    }
+
+    fun loadData() {
         viewModelScope.launch {
+            isDataLoaded.postValue(false)
             if (getPageCount()) {
                 getUsersUsecase()
             }
         }
     }
 
-    fun getUsersUsecase() {
-        viewModelScope.launch(Dispatchers.IO) {
-            getUsersUsecase.invoke(coroutineContext, compositeDisposable)
+    suspend fun getUsersUsecase() {
+        return withContext(Dispatchers.IO) {
+            getUsersUsecase.invoke(compositeDisposable)
+                .onErrorComplete {
+                    Log.d("state", "getUsersUsecase fail")
+                    errorLiveData.postValue(it.message)
+                    true
+                }
                 .subscribe(getUsersObserver())
         }
     }
@@ -71,11 +81,13 @@ class UsersListViewModel @Inject constructor(
                 Log.d("state", "mediator observer onNext")
                 Log.d("progress", t.pageNo.toString())
                 progress.postValue(t.pageNo)
+                Log.d("data", t.entities.map { it.id }.toString())
                 list.addAll(t.entities)
             }
 
             override fun onError(e: Throwable) {
                 Log.d("state", "mediator observer onError")
+                errorLiveData.postValue(e.message)
             }
 
             override fun onComplete() {

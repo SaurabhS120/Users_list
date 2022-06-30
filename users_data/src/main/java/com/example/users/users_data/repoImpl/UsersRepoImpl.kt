@@ -9,6 +9,7 @@ import com.example.users.users_data.repos.UsersRemoteRepo
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
@@ -67,7 +68,7 @@ class UsersRepoImpl @Inject constructor(
 //        }
     }
 
-    override suspend fun getUsers(
+    override fun getUsers(
         coroutineContext: CoroutineContext,
         compositeDisposable: CompositeDisposable
     ): Observable<UsersEntityPage> {
@@ -95,16 +96,39 @@ class UsersRepoImpl @Inject constructor(
                                         Log.d("state", "usersRemoteRepo doOnSuccess")
                                         emitter.onSuccess(it)
                                     }
+                                    .onErrorComplete {
+                                        Log.d("state", "remote repo observer fail")
+                                        emitter.onError(it)
+                                        UsersEntityPage(-1, listOf())
+                                        true
+                                    }
                                     .subscribe()
                             }
                         }
                     }
                 }
+                .onErrorComplete {
+                    Log.d("state", "users repo impl fail 1")
+                    emitter.onError(it)
+                    true
+                }
                 .map {
                     it.doOnSuccess {
-                        usersLocalRepo.insertAll(it.entities)
-                        emitter.onNext(it)
+                        if (it.isEmpty().not()) {
+                            usersLocalRepo.insertAll(it.entities)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(Schedulers.io())
+                                .blockingSubscribe()
+                            emitter.onNext(it)
+                        }
                     }
+                        .onErrorComplete {
+                            Log.d("state", "users repo impl fail 2")
+                            if (emitter.isDisposed.not()) {
+                                emitter.onError(it)
+                            }
+                            true
+                        }
                         .blockingSubscribe()
                 }
 
