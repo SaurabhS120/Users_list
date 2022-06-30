@@ -18,7 +18,7 @@ class UsersRepoImpl @Inject constructor(
     val usersRemoteRepo: UsersRemoteRepo,
     val preferences: PageDetailsPreferences
 ) : UsersMediatorRepo {
-    suspend fun getPageCount(): Int {
+    override suspend fun getPageCount(): Int {
         var pageCount = preferences.getPageCount()
         if (pageCount < 0) {
             pageCount = usersRemoteRepo.getPageCount(coroutineContext)

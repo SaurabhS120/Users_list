@@ -20,17 +20,17 @@ class UsersListFragment: Fragment() {
     ): View {
         // Inflate the layout for this fragment
         val binding = FragmentUsersListBinding.inflate(layoutInflater, container, false)
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = this
         binding.usersRecycler.adapter = adapter
-        binding.usersRecycler.layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false)
+        binding.usersRecycler.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        viewModel.getUsersUsecase()
         viewModel.users.observe(viewLifecycleOwner) { response ->
-
             adapter.submitList(response)
         }
     }
