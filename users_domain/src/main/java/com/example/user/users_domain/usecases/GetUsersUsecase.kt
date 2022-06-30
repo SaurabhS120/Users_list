@@ -1,7 +1,7 @@
 package com.example.user.users_domain.usecases
 
 import android.util.Log
-import com.example.user.users_domain.entities.UsersEntity
+import com.example.user.users_domain.entities.UsersEntityPage
 import com.example.user.users_domain.repos.UsersMediatorRepo
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -16,7 +16,7 @@ class GetUsersUsecase @Inject constructor(val repo: UsersMediatorRepo) {
     suspend fun invoke(
         coroutineContext: CoroutineContext,
         compositeDisposable: CompositeDisposable
-    ): Observable<List<UsersEntity>> {
+    ): Observable<UsersEntityPage> {
         return withContext(Dispatchers.IO) {
             Log.d("state", "getUsersUsecase Invoke")
             return@withContext repo.getUsers(coroutineContext, compositeDisposable)

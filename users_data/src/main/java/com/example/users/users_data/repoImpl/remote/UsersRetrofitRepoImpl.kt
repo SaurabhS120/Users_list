@@ -1,7 +1,7 @@
 package com.example.users.users_data.repoImpl.remote
 
 import android.util.Log
-import com.example.user.users_domain.entities.UsersEntity
+import com.example.user.users_domain.entities.UsersEntityPage
 import com.example.users.users_data.PageConfig
 import com.example.users.users_data.api.remote.ApiInterface
 import com.example.users.users_data.mappers.UsersMapper
@@ -17,27 +17,27 @@ import kotlin.coroutines.CoroutineContext
 
 @Singleton
 class UsersRetrofitRepoImpl @Inject constructor(val api: ApiInterface) : UsersRemoteRepo {
-    override suspend fun getUsers(
-        coroutineContext: CoroutineContext,
-        compositeDisposable: CompositeDisposable
-    ): Single<List<UsersEntity>> {
-        val response = api.getUsers()
-        return Single.create { singleEmitter ->
-            if (response.isSuccessful) {
-                val responseData: UsersModel? = response.body()
-                responseData?.let {
-                    val entities = UsersMapper.toUsersEntities(it)
-                    singleEmitter.onSuccess(entities)
-                }
-            }
-        }
-    }
+//    override suspend fun getUsers(
+//        coroutineContext: CoroutineContext,
+//        compositeDisposable: CompositeDisposable
+//    ): Single<List<UsersEntity>> {
+//        val response = api.getUsers()
+//        return Single.create { singleEmitter ->
+//            if (response.isSuccessful) {
+//                val responseData: UsersModel? = response.body()
+//                responseData?.let {
+//                    val entities = UsersMapper.toUsersEntities(it)
+//                    singleEmitter.onSuccess(entities)
+//                }
+//            }
+//        }
+//    }
 
     override fun getUsersPage(
         pageNo: Int,
         coroutineContext: CoroutineContext,
         compositeDisposable: CompositeDisposable
-    ): Single<List<UsersEntity>> {
+    ): Single<UsersEntityPage> {
         val offset = ((pageNo - 1) * PageConfig.PAGE_SIZE) + 1
         Log.d("state", "getUserRetrofit page:$pageNo")
         Log.d("state", "getUserRetrofit offset:$offset pagesize:${PageConfig.PAGE_SIZE}")
@@ -54,9 +54,12 @@ class UsersRetrofitRepoImpl @Inject constructor(val api: ApiInterface) : UsersRe
                             null
                         }
                         Log.d("state", "getUserRetrofit success id:$text")
-                        singleEmitter.onSuccess(entities)
+                        val usersEntityPage = UsersEntityPage(pageNo, entities)
+                        singleEmitter.onSuccess(usersEntityPage)
+                        return@launch
                     }
                 }
+                singleEmitter.onError(Throwable(response.errorBody().toString()))
             }
         }
     }
@@ -70,6 +73,13 @@ class UsersRetrofitRepoImpl @Inject constructor(val api: ApiInterface) : UsersRe
             }
         }
         return -1
+    }
+
+    override suspend fun getUsers(
+        coroutineContext: CoroutineContext,
+        compositeDisposable: CompositeDisposable
+    ): Single<UsersEntityPage> {
+        TODO("Not yet implemented")
     }
 
 }

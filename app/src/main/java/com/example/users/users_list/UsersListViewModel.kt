@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.user.users_domain.entities.UsersEntity
+import com.example.user.users_domain.entities.UsersEntityPage
 import com.example.user.users_domain.usecases.GetUsersUsecase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.core.Observer
@@ -25,18 +26,17 @@ class UsersListViewModel  @Inject constructor(val getUsersUsecase: GetUsersUseca
         }
     }
 
-    private fun getUsersObserver(): Observer<List<UsersEntity>> {
-        return object : Observer<List<UsersEntity>> {
+    private fun getUsersObserver(): Observer<UsersEntityPage> {
+        return object : Observer<UsersEntityPage> {
             var list = mutableListOf<UsersEntity>()
             override fun onSubscribe(d: Disposable) {
                 Log.d("state", "mediator observer onSubscribe")
                 compositeDisposable.add(d)
             }
 
-            override fun onNext(t: List<UsersEntity>) {
+            override fun onNext(t: UsersEntityPage) {
                 Log.d("state", "mediator observer onNext")
-                list.addAll(t)
-                users.postValue(list)
+                list.addAll(t.entities)
             }
 
             override fun onError(e: Throwable) {
@@ -45,6 +45,7 @@ class UsersListViewModel  @Inject constructor(val getUsersUsecase: GetUsersUseca
 
             override fun onComplete() {
                 Log.d("state", "mediator observer onComplete")
+                users.postValue(list)
                 list = mutableListOf()
             }
 
