@@ -19,27 +19,47 @@ class UsersRepoImpl @Inject constructor(
 ) : UsersMediatorRepo {
     override fun getPageCount(): Single<Int> {
         return Single.just(preferences.getPageCount())
-            .compose {
-                val data = it.blockingGet()
-                if (data < 0) {
-                    val count = usersRemoteRepo.getPageCount()
-                        .onErrorReturn {
-                            -1
+            .flatMap {
+                Single.create<Int> { emitter ->
+                    if (it >= 0) emitter.onSuccess(it)
+                    else usersRemoteRepo.getPageCount()
+                        .onErrorComplete {
+                            if (emitter.isDisposed.not()) {
+                                emitter.onError(it)
+                            }
+                            true
                         }
-                        .blockingGet()
-                    if (count < 0) {
-                        Single.error(Throwable("Network error"))
-                    } else {
-                        preferences.setPageCount(count)
-                        Single.just(count)
-                    }
-                } else {
-                    Single.just(data)
+                        .doOnSuccess {
+                            emitter.onSuccess(it)
+                        }
+                        .blockingSubscribe()
                 }
-            }.map {
-                Log.d("state", "get page observer count pref : $it")
-                it
+                    .map {
+                        preferences.setPageCount(it)
+                        it
+                    }
             }
+//            .compose {
+//                val data = it.blockingGet()
+//                if (data < 0) {
+//                    val count = usersRemoteRepo.getPageCount()
+//                        .onErrorReturn {
+//                            -1
+//                        }
+//                        .blockingGet()
+//                    if (count < 0) {
+//                        Single.error(Throwable("Network error"))
+//                    } else {
+//                        preferences.setPageCount(count)
+//                        Single.just(count)
+//                    }
+//                } else {
+//                    Single.just(data)
+//                }
+//            }.map {
+//                Log.d("state", "get page observer count pref : $it")
+//                it
+//            }
 //        var pageCount = preferences.getPageCount()
 //        if (pageCount < 0) {
 //            pageCount = usersRemoteRepo.getPageCount(coroutineContext)
