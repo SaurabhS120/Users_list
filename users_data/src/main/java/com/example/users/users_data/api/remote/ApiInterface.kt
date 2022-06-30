@@ -11,7 +11,15 @@ interface ApiInterface {
 
     @GET("/users")
     suspend fun getUsers(
-        @Query("offset") offset: Int,
+        @Query("skip") offset: Int,
         @Query("limit") limit: Int
     ): Response<UsersModel>
+
+
+    @GET("/users")
+    suspend fun getUsersEmpty(
+        @Query("skip") offset: Int = 0,
+        @Query("limit") limit: Int = 0
+    ): Response<UsersModel>
+
 }

@@ -3,6 +3,7 @@ package com.example.users.users_data.repoImpl
 import android.util.Log
 import com.example.user.users_domain.entities.UsersEntity
 import com.example.user.users_domain.repos.UsersMediatorRepo
+import com.example.users.users_data.api.local.PageDetailsPreferences
 import com.example.users.users_data.db_entities.UserDbEntity
 import com.example.users.users_data.mappers.UsersMapper
 import com.example.users.users_data.repos.UsersLocalRepo
@@ -20,7 +21,8 @@ import kotlin.coroutines.CoroutineContext
 
 class UsersRepoImpl @Inject constructor(
     val usersLocalRepo: UsersLocalRepo,
-    val usersRemoteRepo: UsersRemoteRepo
+    val usersRemoteRepo: UsersRemoteRepo,
+    val preferences: PageDetailsPreferences
 ) : UsersMediatorRepo {
     override suspend fun getUsers(
         coroutineContext: CoroutineContext,
@@ -96,7 +98,18 @@ class UsersRepoImpl @Inject constructor(
                     }
                 }
                 Log.d("state", "local observer Starting")
-                Observable.range(1, 10)
+                var page_count = preferences.getPageCount()
+                if (page_count == -1) {
+                    try {
+                        val newCount = usersRemoteRepo.getPageCount(coroutineContext)
+                        preferences.setPageCount(newCount)
+                        page_count = newCount
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+
+                }
+                Observable.range(1, page_count)
                     .map {
                         Log.d("state", "calling observer $it")
 

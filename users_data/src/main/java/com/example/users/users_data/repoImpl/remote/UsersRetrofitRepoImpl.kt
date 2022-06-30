@@ -39,6 +39,7 @@ class UsersRetrofitRepoImpl @Inject constructor(val api: ApiInterface) : UsersRe
         compositeDisposable: CompositeDisposable
     ): Single<List<UsersEntity>> {
         val offset = ((pageNo - 1) * PageConfig.PAGE_SIZE) + 1
+        Log.d("state", "getUserRetrofit page:$pageNo")
         Log.d("state", "getUserRetrofit offset:$offset pagesize:${PageConfig.PAGE_SIZE}")
         return Single.create { singleEmitter ->
             CoroutineScope(coroutineContext).launch {
@@ -47,11 +48,28 @@ class UsersRetrofitRepoImpl @Inject constructor(val api: ApiInterface) : UsersRe
                     val responseData: UsersModel? = response.body()
                     responseData?.let {
                         val entities = UsersMapper.toUsersEntities(it)
+                        val text: Int? = if (entities.size >= 1) {
+                            entities[0].id
+                        } else {
+                            null
+                        }
+                        Log.d("state", "getUserRetrofit success id:$text")
                         singleEmitter.onSuccess(entities)
                     }
                 }
             }
         }
+    }
+
+    override suspend fun getPageCount(coroutineContext: CoroutineContext): Int {
+        val response = api.getUsersEmpty()
+        if (response.isSuccessful) {
+            val responseData: UsersModel? = response.body()
+            responseData?.total?.let {
+                return it / PageConfig.PAGE_SIZE
+            }
+        }
+        return -1
     }
 
 }
