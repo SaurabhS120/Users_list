@@ -41,6 +41,8 @@ class UsersRepoImpl @Inject constructor(
                 .map { prev ->
                     Single.create<UsersEntityPage> { emitter ->
                         prev.subscribe {
+
+                            Log.d("state", "local response page:${it.pageNo} empty:${it.isEmpty()}")
                             if (it.isEmpty().not()) {
                                 emitter.onSuccess(it)
                             } else {
@@ -60,6 +62,7 @@ class UsersRepoImpl @Inject constructor(
                 }
                 .map {
                     it.doOnSuccess {
+                        usersLocalRepo.insertAll(it.entities)
                         emitter.onNext(it)
                     }
                         .blockingSubscribe()

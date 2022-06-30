@@ -1,10 +1,10 @@
 package com.example.users.users_data.repoImpl.local
 
 import android.util.Log
+import com.example.user.users_domain.entities.UsersEntity
 import com.example.user.users_domain.entities.UsersEntityPage
 import com.example.users.users_data.PageConfig
 import com.example.users.users_data.api.local.UsersRoomDatabase
-import com.example.users.users_data.db_entities.UserDbEntity
 import com.example.users.users_data.mappers.UsersMapper
 import com.example.users.users_data.repos.UsersLocalRepo
 import dagger.Module
@@ -38,8 +38,9 @@ class UsersRoomRepoImpl @Inject constructor(val roomDatabase: UsersRoomDatabase)
         }
     }
 
-    override suspend fun insertAll(users: List<UserDbEntity>) {
-        roomDatabase.userDao().insertAll(users)
+    override fun insertAll(users: List<UsersEntity>) {
+        val converted = UsersMapper.toUsersDbEntities(users)
+        roomDatabase.userDao().insertAll(converted)
     }
 
     override suspend fun getUsers(
