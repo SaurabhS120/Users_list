@@ -19,7 +19,8 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/users_recycler"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            tools:listitem="@layout/user_list_item" />
 
         <FrameLayout
             android:id="@+id/progress_layout"
