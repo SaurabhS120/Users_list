@@ -40,32 +40,6 @@ class UsersRepoImpl @Inject constructor(
                         it
                     }
             }
-//            .compose {
-//                val data = it.blockingGet()
-//                if (data < 0) {
-//                    val count = usersRemoteRepo.getPageCount()
-//                        .onErrorReturn {
-//                            -1
-//                        }
-//                        .blockingGet()
-//                    if (count < 0) {
-//                        Single.error(Throwable("Network error"))
-//                    } else {
-//                        preferences.setPageCount(count)
-//                        Single.just(count)
-//                    }
-//                } else {
-//                    Single.just(data)
-//                }
-//            }.map {
-//                Log.d("state", "get page observer count pref : $it")
-//                it
-//            }
-//        var pageCount = preferences.getPageCount()
-//        if (pageCount < 0) {
-//            pageCount = usersRemoteRepo.getPageCount(coroutineContext)
-//            preferences.setPageCount(pageCount)
-//        }
     }
 
     override fun getUsers(
@@ -78,64 +52,69 @@ class UsersRepoImpl @Inject constructor(
                 .map {
                     Log.d("state", "local getUsersPage $it")
                     usersLocalRepo.getUsersPage(it, coroutineContext, compositeDisposable)
+                        .blockingGet()
+                        ?: UsersEntityPage(-1, listOf())
                 }
-                .map { prev ->
-                    Single.create<UsersEntityPage> { emitter ->
-                        prev.subscribe {
-
-                            Log.d("state", "local response page:${it.pageNo} empty:${it.isEmpty()}")
-                            if (it.isEmpty().not()) {
-                                emitter.onSuccess(it)
-                            } else {
-                                usersRemoteRepo.getUsersPage(
-                                    it.pageNo,
-                                    coroutineContext,
-                                    compositeDisposable
-                                )
-                                    .doOnSuccess {
-                                        Log.d("state", "usersRemoteRepo doOnSuccess")
-                                        emitter.onSuccess(it)
-                                    }
-                                    .onErrorComplete {
-                                        Log.d("state", "remote repo observer fail")
-                                        emitter.onError(it)
-                                        UsersEntityPage(-1, listOf())
-                                        true
-                                    }
-                                    .subscribe()
-                            }
-                        }
-                    }
-                }
-                .onErrorComplete {
-                    Log.d("state", "users repo impl fail 1")
-                    emitter.onError(it)
-                    true
-                }
-                .map {
-                    it.doOnSuccess {
-                        if (it.isEmpty().not()) {
-                            usersLocalRepo.insertAll(it.entities)
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(Schedulers.io())
-                                .blockingSubscribe()
-                            emitter.onNext(it)
-                        }
-                    }
-                        .onErrorComplete {
-                            Log.d("state", "users repo impl fail 2")
+                .compose { oldObservable ->
+                    Observable.create<UsersEntityPage> { emitter ->
+                        oldObservable.onErrorComplete {
                             if (emitter.isDisposed.not()) {
                                 emitter.onError(it)
                             }
                             true
                         }
-                        .blockingSubscribe()
+                        oldObservable.forEach {
+                            if (it.isEmpty().not()) {
+                                emitter.onNext(it)
+                            } else {
+                                emitter.onNext(
+                                    usersRemoteRepo.getUsersPage(
+                                        it.pageNo,
+                                        coroutineContext,
+                                        compositeDisposable
+                                    )
+                                        .onErrorReturn {
+                                            if (emitter.isDisposed.not()) {
+                                                emitter.onError(it)
+                                            }
+                                            UsersEntityPage(-1, listOf())
+                                        }
+                                        .doOnSuccess {
+                                            usersLocalRepo.insertAll(it.entities)
+                                                .subscribeOn(Schedulers.io())
+                                                .observeOn(Schedulers.io())
+                                                .blockingSubscribe()
+                                        }
+                                        .blockingGet()
+                                )
+
+                            }
+                        }
+                        emitter.onComplete()
+                    }
                 }
 
-                .doFinally {
+                .onErrorComplete {
+                    Log.d("state", "users repo impl fail 2")
+                    if (emitter.isDisposed.not()) {
+                        emitter.onError(it)
+                    }
+                    true
+                }
+                .doOnNext {
+                    if (it.isEmpty().not()) {
+                        usersLocalRepo.insertAll(it.entities)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(Schedulers.io())
+                            .blockingSubscribe()
+                        emitter.onNext(it)
+                    }
+
+                }
+                .doOnComplete {
                     emitter.onComplete()
                 }
-                .subscribe()
+                .blockingSubscribe()
         }
     }
 
