@@ -11,6 +11,8 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.CoroutineContext
@@ -64,15 +66,59 @@ class UsersRetrofitRepoImpl @Inject constructor(val api: ApiInterface) : UsersRe
         }
     }
 
-    override suspend fun getPageCount(coroutineContext: CoroutineContext): Int {
-        val response = api.getUsersEmpty()
-        if (response.isSuccessful) {
-            val responseData: UsersModel? = response.body()
-            responseData?.total?.let {
-                return it / PageConfig.PAGE_SIZE
-            }
+    override fun getPageCount(): Single<Int> {
+        return Single.create { emitter ->
+            api.getUsersEmpty()
+                .enqueue(object : Callback<UsersModel> {
+                    override fun onResponse(
+                        call: Call<UsersModel>,
+                        response: retrofit2.Response<UsersModel>
+                    ) {
+                        if (response.isSuccessful) {
+                            val total = response.body()?.total ?: 0
+                            if (total < 1) {
+                                emitter.onSuccess(-1)
+                            } else {
+                                emitter.onSuccess(total / PageConfig.PAGE_SIZE)
+                            }
+                        }
+                    }
+
+                    override fun onFailure(call: Call<UsersModel>, t: Throwable) {
+                        if (emitter.isDisposed.not()) {
+                            emitter.onError(Throwable("Network error"))
+                        }
+                    }
+                })
         }
-        return -1
+
+
+//        }
+
+//            .compose {
+//            val response = it
+//                .onErrorReturn {
+//                    Log.d("state","network onErrorReturn")
+//                    null
+//                }
+//                .blockingGet()
+//            Single.just(
+//                if (response.isSuccessful){
+//                    response.body()?.total?.let {
+//                        if (it>0)it/PageConfig.PAGE_SIZE
+//                        else -1
+//                    }?:-1
+//                }else{
+//                    -1
+//                }
+//            )
+//        }
+//        if (response.isSuccessful) {
+//            val responseData: UsersModel? = response.body()
+//            responseData?.total?.let {
+//                return it / PageConfig.PAGE_SIZE
+//            }
+//        }
     }
 
     override suspend fun getUsers(

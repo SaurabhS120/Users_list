@@ -14,6 +14,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,10 +27,14 @@ class UsersListViewModel @Inject constructor(
     val progress = MutableLiveData(0)
     val maxProgress = MutableLiveData(1)
     val compositeDisposable = CompositeDisposable()
+    val errorLiveData = MutableLiveData<String>()
 
     init {
-        getPageCount()
-        getUsersUsecase()
+        viewModelScope.launch {
+            if (getPageCount()) {
+                getUsersUsecase()
+            }
+        }
     }
 
     fun getUsersUsecase() {
@@ -39,11 +44,18 @@ class UsersListViewModel @Inject constructor(
         }
     }
 
-    fun getPageCount() {
-        viewModelScope.launch(Dispatchers.IO) {
+    suspend fun getPageCount(): Boolean {
+        return withContext(Dispatchers.IO) {
             val maxP = getPageCountUsecase.invoke()
-            maxProgress.postValue(maxP)
-            Log.d("progress", "max : $maxP")
+                .onErrorReturn {
+                    isDataLoaded.postValue(true)
+                    errorLiveData.postValue(it.message.toString())
+                    -1
+                }
+            val value = maxP.blockingGet()
+            maxProgress.postValue(value)
+            Log.d("progress", "max : $value")
+            value >= 1
         }
     }
 

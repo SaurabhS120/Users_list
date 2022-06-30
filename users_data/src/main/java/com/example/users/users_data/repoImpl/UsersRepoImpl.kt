@@ -11,27 +11,47 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.coroutineContext
 
 class UsersRepoImpl @Inject constructor(
     val usersLocalRepo: UsersLocalRepo,
     val usersRemoteRepo: UsersRemoteRepo,
     val preferences: PageDetailsPreferences
 ) : UsersMediatorRepo {
-    override suspend fun getPageCount(): Int {
-        var pageCount = preferences.getPageCount()
-        if (pageCount < 0) {
-            pageCount = usersRemoteRepo.getPageCount(coroutineContext)
-            preferences.setPageCount(pageCount)
-        }
-        return pageCount
+    override fun getPageCount(): Single<Int> {
+        return Single.just(preferences.getPageCount())
+            .compose {
+                val data = it.blockingGet()
+                if (data < 0) {
+                    val count = usersRemoteRepo.getPageCount()
+                        .onErrorReturn {
+                            -1
+                        }
+                        .blockingGet()
+                    if (count < 0) {
+                        Single.error(Throwable("Network error"))
+                    } else {
+                        preferences.setPageCount(count)
+                        Single.just(count)
+                    }
+                } else {
+                    Single.just(data)
+                }
+            }.map {
+                Log.d("state", "get page observer count pref : $it")
+                it
+            }
+//        var pageCount = preferences.getPageCount()
+//        if (pageCount < 0) {
+//            pageCount = usersRemoteRepo.getPageCount(coroutineContext)
+//            preferences.setPageCount(pageCount)
+//        }
     }
 
     override suspend fun getUsers(
         coroutineContext: CoroutineContext,
         compositeDisposable: CompositeDisposable
     ): Observable<UsersEntityPage> {
-        val pageCount = getPageCount()
+        val pageCount = getPageCount().blockingGet()
         return Observable.create { emitter ->
             Observable.range(1, pageCount)
                 .map {
