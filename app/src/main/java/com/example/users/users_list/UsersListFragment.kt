@@ -36,7 +36,7 @@ class UsersListFragment: Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentUsersListBinding.inflate(layoutInflater, container, false)
         binding.viewModel = viewModel
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = viewLifecycleOwner
         binding.usersRecycler.adapter = adapter
         binding.usersRecycler.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)

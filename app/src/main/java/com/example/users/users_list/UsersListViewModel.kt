@@ -32,6 +32,7 @@ class UsersListViewModel @Inject constructor(
     val selectedUser = MutableLiveData(UsersEntity(-1, "", "", ""))
 
     init {
+        Log.d("state", "viewmodel init")
         loadData()
         selectedUserPos.observeForever { pos ->
             users.value?.let { users ->
