@@ -5,8 +5,19 @@
     android:id="@+id/default_navigation"
     app:startDestination="@id/users_list">
 
-    <fragment android:id="@+id/users_list"
+    <fragment
+        android:id="@+id/users_list"
         android:name="com.example.users.users_list.UsersListFragment"
-        tools:layout="@layout/fragment_users_list"/>
+        tools:layout="@layout/fragment_users_list">
+        <action
+            android:id="@+id/action_users_list_to_users_details"
+            app:destination="@id/users_details" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/users_details"
+        android:name="com.example.users.user_details.UserDetailsFragment"
+        tools:layout="@layout/fragment_user_details" />
+
 
 </navigation>

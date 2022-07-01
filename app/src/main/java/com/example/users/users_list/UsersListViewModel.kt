@@ -28,9 +28,16 @@ class UsersListViewModel @Inject constructor(
     val maxProgress = MutableLiveData(1)
     val compositeDisposable = CompositeDisposable()
     val errorLiveData = MutableLiveData<String>()
+    val selectedUserPos = MutableLiveData(-1)
+    val selectedUser = MutableLiveData(UsersEntity(-1, "", "", ""))
 
     init {
         loadData()
+        selectedUserPos.observeForever { pos ->
+            users.value?.let { users ->
+                if (pos >= 0) selectedUser.postValue(users.get(pos))
+            }
+        }
     }
 
     fun loadData() {
