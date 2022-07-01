@@ -2,4 +2,8 @@
     <string name="app_name">Users</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="first_name">First name :</string>
+    <string name="id">Id :</string>
+    <string name="maiden_name">Maiden name :</string>
+    <string name="last_name">Last name :</string>
 </resources>
