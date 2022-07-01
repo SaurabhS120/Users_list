@@ -6,4 +6,5 @@
     <string name="id">Id :</string>
     <string name="maiden_name">Maiden name :</string>
     <string name="last_name">Last name :</string>
+    <string name="dummy_profile_photo">Dummy profile photo</string>
 </resources>

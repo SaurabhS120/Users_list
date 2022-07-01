@@ -9,6 +9,7 @@
     </data>
 
     <ScrollView xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="8sp"
@@ -17,59 +18,22 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:orientation="vertical">
 
-
-            <!-- id -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/id"
-                android:textStyle="bold" />
+            <ImageView
+                android:layout_width="128sp"
+                android:layout_height="128sp"
+                android:contentDescription="@string/dummy_profile_photo"
+                android:src="@drawable/ic_baseline_person_24" />
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@{usersListViewModel.selectedUser.idString(),default=test}" />
-
-
-            <!-- first name -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/first_name"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@{usersListViewModel.selectedUser.firstName,default=test}" />
-
-
-            <!-- middle name -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/maiden_name"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@{usersListViewModel.selectedUser.maidenName,default=test}" />
-
-
-            <!-- Last name -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/last_name"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@{usersListViewModel.selectedUser.lastName,default=test}" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{usersListViewModel.selectedUser.fullName(),default=name}"
+                android:textAlignment="center"
+                android:textSize="24sp"
+                app:drawableTop="@drawable/ic_baseline_person_24" />
 
         </LinearLayout>
 
