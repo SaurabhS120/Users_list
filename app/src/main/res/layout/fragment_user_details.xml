@@ -24,11 +24,11 @@
 
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="128sp"
+                android:layout_height="256sp"
                 android:background="#EAEEF4"
                 android:contentDescription="@string/dummy_profile_photo"
-                android:src="@drawable/ic_baseline_person_24"
-                app:tint="#2E2E2E" />
+                android:scaleType="centerCrop"
+                android:src="@drawable/person_background" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -41,13 +41,50 @@
                 android:textColor="@color/white"
                 android:textStyle="bold" />
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="4sp"
-                android:text="@{usersListViewModel.selectedUser.phone,default=phone}"
-                android:textSize="16sp"
-                app:drawableStartCompat="@drawable/ic_baseline_smartphone_24" />
+                android:orientation="vertical"
+                android:padding="24sp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4sp"
+                    android:layout_marginTop="12sp"
+                    android:text="@string/mobile_no"
+                    android:textColor="?attr/colorPrimary"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12sp"
+                    android:text="@{usersListViewModel.selectedUser.phone,default=phone}"
+                    android:textSize="16sp"
+                    app:drawableStartCompat="@drawable/ic_baseline_smartphone_24"
+                    app:drawableTint="@color/red" />
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4sp"
+                    android:layout_marginTop="12sp"
+                    android:text="@string/birthday"
+                    android:textColor="?attr/colorPrimary"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12sp"
+                    android:text="@{usersListViewModel.selectedUser.birthDate,default=birth_date}"
+                    android:textSize="16sp"
+                    app:drawableStartCompat="@drawable/ic_baseline_calendar_month_24"
+                    app:drawableTint="@color/red" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

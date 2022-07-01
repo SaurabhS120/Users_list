@@ -20,6 +20,7 @@ object RoomApi {
             UsersRoomDatabase::class.java, "users_db"
         )
             .addMigrations(UserDatabaseMigrations.MIGRATION_1_TO_2)
+            .addMigrations(UserDatabaseMigrations.MIGRATION_2_TO_3)
             .build()
     }
 }

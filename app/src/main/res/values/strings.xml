@@ -7,4 +7,6 @@
     <string name="maiden_name">Maiden name :</string>
     <string name="last_name">Last name :</string>
     <string name="dummy_profile_photo">Dummy profile photo</string>
+    <string name="mobile_no">Mobile no</string>
+    <string name="birthday">Birthday</string>
 </resources>
