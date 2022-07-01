@@ -29,7 +29,7 @@ class UsersListViewModel @Inject constructor(
     val compositeDisposable = CompositeDisposable()
     val errorLiveData = MutableLiveData<String>()
     val selectedUserPos = MutableLiveData(-1)
-    val selectedUser = MutableLiveData(UsersEntity(-1, "", "", ""))
+    val selectedUser = MutableLiveData(UsersEntity(-1, "", "", "", ""))
 
     init {
         Log.d("state", "viewmodel init")

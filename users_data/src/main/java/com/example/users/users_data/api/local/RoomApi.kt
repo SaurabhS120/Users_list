@@ -18,6 +18,8 @@ object RoomApi {
         return Room.databaseBuilder(
             applicationContext,
             UsersRoomDatabase::class.java, "users_db"
-        ).build()
+        )
+            .addMigrations(UserDatabaseMigrations.MIGRATION_1_TO_2)
+            .build()
     }
 }

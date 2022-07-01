@@ -11,24 +11,37 @@ object UsersMapper {
                 userItem?.id ?: 0,
                 userItem?.firstName ?: "",
                 userItem?.maidenName ?: "",
-                userItem?.lastName ?: ""
+                userItem?.lastName ?: "",
+                userItem?.phone ?: ""
             )
         } ?: listOf()
     }
 
     fun toUsersEntities(daos: List<UserDbEntity>): List<UsersEntity> {
         return daos.map { dao ->
-            UsersEntity(dao.id, dao.first_name, dao.maiden_name, dao.last_name)
+            UsersEntity(dao.id, dao.first_name, dao.maiden_name, dao.last_name, dao.phone)
         }
     }
 
     fun toUsersDbEntities(entities: List<UsersEntity>?): List<UserDbEntity> {
         return entities?.map { entity ->
-            UserDbEntity(entity.id, entity.firstName, entity.maidenName, entity.lastName)
+            UserDbEntity(
+                entity.id,
+                entity.firstName,
+                entity.maidenName,
+                entity.lastName,
+                entity.phone
+            )
         } ?: listOf()
     }
 
     fun dbEntityToUserEntity(entity: UserDbEntity): UsersEntity {
-        return UsersEntity(entity.id, entity.first_name, entity.maiden_name, entity.last_name)
+        return UsersEntity(
+            entity.id,
+            entity.first_name,
+            entity.maiden_name,
+            entity.last_name,
+            entity.phone
+        )
     }
 }

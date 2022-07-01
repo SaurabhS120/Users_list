@@ -63,17 +63,22 @@ class UsersRepoImpl @Inject constructor(
                             }
                             true
                         }
-                        oldObservable.forEach {
-                            if (it.isEmpty().not()) {
-                                emitter.onNext(it)
-                            } else {
-                                emitter.onNext(
-                                    usersRemoteRepo.getUsersPage(
-                                        it.pageNo,
-                                        coroutineContext,
-                                        compositeDisposable
-                                    )
-                                        .onErrorReturn {
+                        oldObservable
+                            .onErrorComplete {
+                                emitter.onError(it)
+                                true
+                            }
+                            .forEach {
+                                if (it.isEmpty().not()) {
+                                    emitter.onNext(it)
+                                } else {
+                                    emitter.onNext(
+                                        usersRemoteRepo.getUsersPage(
+                                            it.pageNo,
+                                            coroutineContext,
+                                            compositeDisposable
+                                        )
+                                            .onErrorReturn {
                                             if (emitter.isDisposed.not()) {
                                                 emitter.onError(it)
                                             }
@@ -110,6 +115,12 @@ class UsersRepoImpl @Inject constructor(
                         emitter.onNext(it)
                     }
 
+                }
+                .onErrorComplete {
+                    if (emitter.isDisposed.not()) {
+                        emitter.onError(it)
+                    }
+                    true
                 }
                 .doOnComplete {
                     emitter.onComplete()

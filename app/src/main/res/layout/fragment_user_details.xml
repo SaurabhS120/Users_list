@@ -41,6 +41,14 @@
                 android:textColor="@color/white"
                 android:textStyle="bold" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4sp"
+                android:text="@{usersListViewModel.selectedUser.phone,default=phone}"
+                android:textSize="16sp"
+                app:drawableStartCompat="@drawable/ic_baseline_smartphone_24" />
+
         </LinearLayout>
 
     </ScrollView>
