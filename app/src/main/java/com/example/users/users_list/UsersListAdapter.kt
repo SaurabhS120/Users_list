@@ -23,10 +23,7 @@ class UsersListAdapter(val selctedUserVar: MutableLiveData<Int>) :
     }
 
     override fun onBindViewHolder(holder: EntityViewHolder, position: Int) {
-        val text: String = getItem(position).let {
-            "${it.firstName} ${it.maidenName} ${it.lastName} ${it.id}"
-        }
-        holder.binding.fullNameTv.setText(text)
+        holder.binding.enyity = getItem(position)
         holder.binding.root.setOnClickListener {
             selctedUserVar.postValue(position)
         }

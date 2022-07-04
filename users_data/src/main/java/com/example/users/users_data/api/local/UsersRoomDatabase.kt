@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import com.example.users.users_data.dao.UsersDao
 import com.example.users.users_data.db_entities.UserDbEntity
 
-@Database(entities = [UserDbEntity::class], version = 4)
+@Database(entities = [UserDbEntity::class], version = 5)
 abstract class UsersRoomDatabase : RoomDatabase() {
     abstract fun userDao(): UsersDao
 }

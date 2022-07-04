@@ -49,4 +49,18 @@ object UserDatabaseMigrations {
 
     }
 
+    val MIGRATION_4_TO_5 = object : Migration(4, 5) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.apply {
+                Log.d("state", "clearing table")
+                execSQL("DELETE FROM users")
+                Log.d("state", "adding column")
+                execSQL("ALTER TABLE users ADD COLUMN company TEXT  NOT NULL DEFAULT ''")
+                Log.d("state", "migration success commit")
+            }
+
+        }
+
+    }
+
 }
