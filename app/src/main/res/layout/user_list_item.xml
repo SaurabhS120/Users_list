@@ -19,7 +19,7 @@
             android:layout_height="72sp"
             android:layout_gravity="center_vertical"
             android:layout_margin="12sp"
-            app:cardBackgroundColor="@color/light_gray"
+            app:cardBackgroundColor="@color/secondary_text"
             app:cardCornerRadius="100sp">
 
             <FrameLayout
@@ -53,7 +53,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@{enyity.fullName(),default=@string/name}"
-                android:textColor="@color/black"
+                android:textColor="@color/primary_text"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -62,7 +62,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@{enyity.company,default=@string/company}"
-                android:textColor="@color/light_gray"
+                android:textColor="@color/secondary_text"
                 android:textSize="12sp" />
         </LinearLayout>
 

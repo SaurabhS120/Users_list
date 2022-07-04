@@ -53,7 +53,7 @@
                     android:layout_marginStart="4sp"
                     android:layout_marginTop="12sp"
                     android:text="@string/mobile_no"
-                    android:textColor="@color/dark_gray"
+                    android:textColor="@color/primary_text"
                     android:textSize="12sp" />
 
                 <TextView
@@ -64,7 +64,7 @@
                     android:textSize="16sp"
                     app:drawableStartCompat="@drawable/ic_baseline_smartphone_24"
                     android:drawablePadding="2sp"
-                    android:textColor="@color/light_gray"
+                    android:textColor="@color/secondary_text"
                     app:drawableTint="@color/red" />
 
 
@@ -74,7 +74,7 @@
                     android:layout_marginStart="4sp"
                     android:layout_marginTop="12sp"
                     android:text="@string/birthday"
-                    android:textColor="@color/dark_gray"
+                    android:textColor="@color/primary_text"
                     android:textSize="12sp" />
 
                 <TextView
@@ -85,7 +85,7 @@
                     android:textSize="16sp"
                     app:drawableStartCompat="@drawable/ic_baseline_calendar_month_24"
                     android:drawablePadding="2sp"
-                    android:textColor="@color/light_gray"
+                    android:textColor="@color/secondary_text"
                     app:drawableTint="@color/red" />
 
 
@@ -95,7 +95,7 @@
                     android:layout_marginStart="4sp"
                     android:layout_marginTop="12sp"
                     android:text="@string/age"
-                    android:textColor="@color/dark_gray"
+                    android:textColor="@color/primary_text"
                     android:textSize="12sp" />
 
                 <TextView
@@ -106,7 +106,7 @@
                     android:text="@{usersListViewModel.selectedUser.ageString(),default=age}"
                     android:textSize="16sp"
                     app:drawableStartCompat="@drawable/ic_baseline_date_range_24"
-                    android:textColor="@color/light_gray"
+                    android:textColor="@color/secondary_text"
                     app:drawableTint="@color/red" />
 
 
@@ -116,7 +116,7 @@
                     android:layout_marginStart="4sp"
                     android:layout_marginTop="12sp"
                     android:text="@string/blood_group"
-                    android:textColor="@color/dark_gray"
+                    android:textColor="@color/primary_text"
                     android:textSize="12sp" />
 
                 <TextView
@@ -127,7 +127,7 @@
                     android:text="@{usersListViewModel.selectedUser.bloodGroup,default=blood_gruop}"
                     android:textSize="16sp"
                     app:drawableStartCompat="@drawable/ic_baseline_water_drop_24"
-                    android:textColor="@color/light_gray"
+                    android:textColor="@color/secondary_text"
                     app:drawableTint="@color/red" />
 
             </LinearLayout>
