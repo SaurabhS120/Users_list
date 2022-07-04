@@ -11,5 +11,7 @@ data class UserDbEntity(
     @ColumnInfo(name = "maiden_name") val maiden_name: String,
     @ColumnInfo(name = "last_name") val last_name: String,
     @ColumnInfo(name = "phone") val phone: String,
-    @ColumnInfo(name = "birth_date") val birthDate: String
+    @ColumnInfo(name = "birth_date") val birthDate: String,
+    @ColumnInfo(name = "age") val age: Int,
+    @ColumnInfo(name = "blood_group") val bloodGroup: String
 )

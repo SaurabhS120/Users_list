@@ -38,6 +38,7 @@ class UsersListViewModel @Inject constructor(
             users.value?.let { users ->
                 if (pos >= 0) selectedUser.postValue(users.get(pos))
             }
+
         }
     }
 

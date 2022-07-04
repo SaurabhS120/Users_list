@@ -6,12 +6,15 @@ data class UsersEntity(
     val maidenName: String,
     val lastName: String,
     val phone: String,
-    val birthDate: String
+    val birthDate: String,
+    val age: Int,
+    val bloodGroup: String
 ) {
     fun idString() = id.toString()
     fun fullName() = "$firstName $maidenName $lastName"
+    fun ageString() = age.toString()
 
     companion object {
-        fun getEmpty() = UsersEntity(-1, "", "", "", "", "")
+        fun getEmpty() = UsersEntity(-1, "", "", "", "", "", 0, "")
     }
 }

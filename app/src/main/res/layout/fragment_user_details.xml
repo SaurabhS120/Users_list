@@ -48,7 +48,7 @@
                 android:padding="24sp">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4sp"
                     android:layout_marginTop="12sp"
@@ -63,6 +63,7 @@
                     android:text="@{usersListViewModel.selectedUser.phone,default=phone}"
                     android:textSize="16sp"
                     app:drawableStartCompat="@drawable/ic_baseline_smartphone_24"
+                    android:drawablePadding="2sp"
                     app:drawableTint="@color/red" />
 
 
@@ -82,6 +83,47 @@
                     android:text="@{usersListViewModel.selectedUser.birthDate,default=birth_date}"
                     android:textSize="16sp"
                     app:drawableStartCompat="@drawable/ic_baseline_calendar_month_24"
+                    android:drawablePadding="2sp"
+                    app:drawableTint="@color/red" />
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4sp"
+                    android:layout_marginTop="12sp"
+                    android:text="@string/age"
+                    android:textColor="?attr/colorPrimary"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12sp"
+                    android:drawablePadding="2sp"
+                    android:text="@{usersListViewModel.selectedUser.ageString(),default=age}"
+                    android:textSize="16sp"
+                    app:drawableStartCompat="@drawable/ic_baseline_date_range_24"
+                    app:drawableTint="@color/red" />
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4sp"
+                    android:layout_marginTop="12sp"
+                    android:text="@string/blood_group"
+                    android:textColor="?attr/colorPrimary"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12sp"
+                    android:drawablePadding="2sp"
+                    android:text="@{usersListViewModel.selectedUser.bloodGroup,default=blood_gruop}"
+                    android:textSize="16sp"
+                    app:drawableStartCompat="@drawable/ic_baseline_water_drop_24"
                     app:drawableTint="@color/red" />
 
             </LinearLayout>

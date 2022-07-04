@@ -21,6 +21,7 @@ object RoomApi {
         )
             .addMigrations(UserDatabaseMigrations.MIGRATION_1_TO_2)
             .addMigrations(UserDatabaseMigrations.MIGRATION_2_TO_3)
+            .addMigrations(UserDatabaseMigrations.MIGRATION_3_TO_4)
             .build()
     }
 }

@@ -13,7 +13,9 @@ object UsersMapper {
                 userItem?.maidenName ?: "",
                 userItem?.lastName ?: "",
                 userItem?.phone ?: "",
-                userItem?.birthDate ?: ""
+                userItem?.birthDate ?: "",
+                userItem?.age ?: 0,
+                userItem?.bloodGroup ?: ""
             )
         } ?: listOf()
     }
@@ -26,7 +28,9 @@ object UsersMapper {
                 dao.maiden_name,
                 dao.last_name,
                 dao.phone,
-                dao.birthDate
+                dao.birthDate,
+                dao.age,
+                dao.bloodGroup
             )
         }
     }
@@ -39,7 +43,9 @@ object UsersMapper {
                 entity.maidenName,
                 entity.lastName,
                 entity.phone,
-                entity.birthDate
+                entity.birthDate,
+                entity.age,
+                entity.bloodGroup
             )
         } ?: listOf()
     }
@@ -51,7 +57,9 @@ object UsersMapper {
             entity.maiden_name,
             entity.last_name,
             entity.phone,
-            entity.birthDate
+            entity.birthDate,
+            entity.age,
+            entity.bloodGroup
         )
     }
 }
