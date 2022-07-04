@@ -1,10 +1,9 @@
 package com.example.users.users_list
 
 import android.content.res.Resources
-import android.os.Build
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
+import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -28,20 +27,9 @@ class UsersListAdapter(val selctedUserVar: MutableLiveData<Int>, val theme: Reso
 
     override fun onBindViewHolder(holder: EntityViewHolder, position: Int) {
         holder.binding.enyity = getItem(position)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            setCardColor(holder, position)
-        }
-        holder.binding.root.setOnClickListener {
-            selctedUserVar.postValue(position)
-        }
-
-
-    }
-
-    @RequiresApi(Build.VERSION_CODES.M)
-    fun setCardColor(holder: EntityViewHolder, position: Int) {
         holder.binding.circularCard.setCardBackgroundColor(
-            holder.binding.root.context.resources.getColor(
+            ResourcesCompat.getColor(
+                holder.binding.root.resources,
                 when (position % 5) {
                     0 -> R.color.card_red
                     1 -> R.color.card_orange
@@ -49,10 +37,14 @@ class UsersListAdapter(val selctedUserVar: MutableLiveData<Int>, val theme: Reso
                     3 -> R.color.card_green
                     4 -> R.color.card_blue
                     else -> R.color.card_red
-                },
-                theme
+                }, theme
             )
         )
+        holder.binding.root.setOnClickListener {
+            selctedUserVar.postValue(position)
+        }
+
+
     }
 
     companion object {
