@@ -26,7 +26,7 @@ class UsersListFragment: Fragment() {
         val viewModel: UsersListViewModel by activityViewModels()
         this.viewModel = viewModel
         activity = requireActivity() as MainActivity
-        adapter = UsersListAdapter(viewModel.selectedUserPos)
+        adapter = UsersListAdapter(viewModel.selectedUserPos, activity.theme)
     }
 
     override fun onCreateView(
