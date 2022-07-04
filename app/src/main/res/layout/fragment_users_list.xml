@@ -23,12 +23,14 @@
             android:visibility="@{viewModel.isDataLoaded?View.VISIBLE:View.INVISIBLE,default=visible}"
             tools:listitem="@layout/user_list_item" />
 
-        <FrameLayout
+        <LinearLayout
             android:id="@+id/progress_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clickable="true"
             android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical"
             android:visibility="@{viewModel.isDataLoaded?View.INVISIBLE:View.VISIBLE,default=visible}">
 
             <com.google.android.material.progressindicator.CircularProgressIndicator
@@ -39,7 +41,13 @@
                 android:indeterminate="@{viewModel.progress==0}"
                 android:max="@{viewModel.maxProgress,default=1}"
                 android:progress="@{viewModel.progress,default=0}" />
-        </FrameLayout>
+
+            <TextView
+                android:id="@+id/progress_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.progressText}" />
+        </LinearLayout>
 
     </FrameLayout>
 </layout>

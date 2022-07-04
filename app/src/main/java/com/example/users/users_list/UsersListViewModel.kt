@@ -30,6 +30,7 @@ class UsersListViewModel @Inject constructor(
     val errorLiveData = MutableLiveData<String>()
     val selectedUserPos = MutableLiveData(-1)
     val selectedUser = MutableLiveData(UsersEntity.getEmpty())
+    val progressText = MutableLiveData("Loading")
 
     init {
         Log.d("state", "viewmodel init")
@@ -39,6 +40,14 @@ class UsersListViewModel @Inject constructor(
                 if (pos >= 0) selectedUser.postValue(users.get(pos))
             }
 
+        }
+        progress.observeForever { count ->
+            maxProgress.value?.let { maxProgress ->
+                if (maxProgress > 0) {
+                    val progress = count * 100 / maxProgress
+                    progressText.postValue("$progress%")
+                }
+            }
         }
     }
 
