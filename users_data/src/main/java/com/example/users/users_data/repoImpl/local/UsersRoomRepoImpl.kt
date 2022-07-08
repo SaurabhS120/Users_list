@@ -41,6 +41,7 @@ class UsersRoomRepoImpl @Inject constructor(val roomDatabase: UsersRoomDatabase)
     }
 
     override fun insertAll(users: List<UsersEntity>): Completable {
+        Log.d("state", "insertAll $users")
         val converted = UsersMapper.toUsersDbEntities(users)
         return roomDatabase.userDao().insertAll(converted)
     }

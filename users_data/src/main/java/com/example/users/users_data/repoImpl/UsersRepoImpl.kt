@@ -47,7 +47,7 @@ class UsersRepoImpl @Inject constructor(
         compositeDisposable: CompositeDisposable
     ): Observable<UsersEntityPage> {
         val pageCount = getPageCount().blockingGet()
-        return Observable.create { emitter ->
+        return Observable.create<UsersEntityPage?> { mainEmitter ->
             Observable.range(1, pageCount)
                 .map {
                     Log.d("state", "local getUsersPage $it")
@@ -101,32 +101,32 @@ class UsersRepoImpl @Inject constructor(
 
                 .onErrorComplete {
                     Log.d("state", "users repo impl fail 2")
-                    if (emitter.isDisposed.not()) {
-                        emitter.onError(it)
+                    if (mainEmitter.isDisposed.not()) {
+                        mainEmitter.onError(it)
                     }
                     true
                 }
                 .doOnNext {
                     if (it.isEmpty().not()) {
-                        usersLocalRepo.insertAll(it.entities)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(Schedulers.io())
-                            .blockingSubscribe()
-                        emitter.onNext(it)
+                        mainEmitter.onNext(it)
                     }
 
                 }
                 .onErrorComplete {
-                    if (emitter.isDisposed.not()) {
-                        emitter.onError(it)
+                    if (mainEmitter.isDisposed.not()) {
+                        mainEmitter.onError(it)
                     }
                     true
                 }
                 .doOnComplete {
-                    emitter.onComplete()
+                    mainEmitter.onComplete()
                 }
                 .blockingSubscribe()
         }
+            .map {
+                Log.d("state", "returning data from repo : $it")
+                it
+            }
     }
 
     override fun getUsersPage(
